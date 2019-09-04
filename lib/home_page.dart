@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
+import 'package:air_app/wallet_page.dart';
 
 class HomePage extends StatelessWidget {
   static String tag = 'home-page';
 
   @override
   Widget build(BuildContext context) {
-    final alucard = Hero(
-      tag: 'hero',
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: CircleAvatar(
-          radius: 72.0,
-          backgroundColor: Colors.transparent,
-          // backgroundImage: AssetImage('assets/alucard.jpg'),
-        ),
+
+    final titleText = Padding(
+      padding: EdgeInsets.all(2.0),
+      child: Text(
+        'Leitor',
+        style: TextStyle(fontSize: 28.0, color: Colors.white),
       ),
     );
 
-    final welcome = Padding(
-      padding: EdgeInsets.all(8.0),
+    final nfcImage = Image.asset("assets/nfc.png");
+
+    final subTitleText = Padding(
+      padding: EdgeInsets.all(2.0),
       child: Text(
-        'Insert your card',
-        style: TextStyle(fontSize: 28.0, color: Colors.white),
+        'Apresente um cartão',
+        style: TextStyle(fontSize: 18.0, color: Colors.white),
       ),
     );
 
@@ -34,10 +35,25 @@ class HomePage extends StatelessWidget {
           Colors.lightBlueAccent,
         ]),
       ),
-      child: Column(
-        children: <Widget>[alucard, welcome],
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[titleText, subTitleText, nfcImage],
+          ),
       ),
     );
+
+    FlutterNfcReader.read().then((response) {
+      // Navigator.of(context).pushNamed(WalletPage.tag);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WalletPage(cardId: response.id),
+          ),
+        );
+      print(response.id);
+    });
 
     return Scaffold(
       body: body,
