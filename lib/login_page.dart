@@ -1,5 +1,11 @@
 import 'package:air_app/home_page.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:toast/toast.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'package:http/http.dart';
+
 
 class LoginPage extends StatefulWidget {
   static String tag = 'login-page';
@@ -8,6 +14,39 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  final storage = new FlutterSecureStorage();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  loginUser() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String url = 'https://rockey-api.lappis.rocks/login';
+    Map<String, String> headers = {"Content-type": "application/json"};
+
+    Map jsonMap = {
+      'email': email,
+      'password': password
+    };
+
+    Response response = await post(url, headers: headers, body: json.encode(jsonMap));
+    int statusCode = response.statusCode;
+    debugPrint(statusCode.toString());
+
+    String body = response.body;
+    Map<String, dynamic> jsonResponse = jsonDecode(body);
+
+    if(statusCode == 200) {
+      String authToken = jsonResponse['auth_token'];
+      debugPrint(authToken);
+      await storage.write(key: 'authToken', value: authToken);
+      Navigator.of(context).pushNamed(HomePage.tag);
+    }else {
+      Toast.show("Wrong credentials", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final logo = Hero(
@@ -22,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     final email = TextFormField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
+      controller: _emailController,
       decoration: InputDecoration(
         hintText: 'Email',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -32,6 +72,7 @@ class _LoginPageState extends State<LoginPage> {
     final password = TextFormField(
       autofocus: false,
       obscureText: true,
+      controller: _passwordController,
       decoration: InputDecoration(
         hintText: 'Password',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -46,11 +87,11 @@ class _LoginPageState extends State<LoginPage> {
           borderRadius: BorderRadius.circular(24),
         ),
         onPressed: () {
-          Navigator.of(context).pushNamed(HomePage.tag);
+          loginUser();
         },
         padding: EdgeInsets.all(12),
         color: Colors.lightBlueAccent,
-        child: Text('Log In', style: TextStyle(color: Colors.white)),
+        child: Text('Login', style: TextStyle(color: Colors.white)),
       ),
     );
 
