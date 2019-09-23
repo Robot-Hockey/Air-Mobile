@@ -1,27 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
+import 'package:air_app/wallet_page.dart';
+import 'package:air_app/create_card_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:io';
+import 'package:http/http.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static String tag = 'home-page';
+  @override
+  _HomePageState createState() => new _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  final storage = new FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
-    final alucard = Hero(
-      tag: 'hero',
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: CircleAvatar(
-          radius: 72.0,
-          backgroundColor: Colors.transparent,
-          // backgroundImage: AssetImage('assets/alucard.jpg'),
-        ),
+
+    final titleText = Padding(
+      padding: EdgeInsets.all(2.0),
+      child: Text(
+        'Leitor',
+        style: TextStyle(fontSize: 28.0, color: Colors.white),
       ),
     );
 
-    final welcome = Padding(
-      padding: EdgeInsets.all(8.0),
+    final nfcImage = Image.asset("assets/nfc.png");
+
+    final subTitleText = Padding(
+      padding: EdgeInsets.all(2.0),
       child: Text(
-        'Insert your card',
-        style: TextStyle(fontSize: 28.0, color: Colors.white),
+        'Apresente um cartão',
+        style: TextStyle(fontSize: 18.0, color: Colors.white),
       ),
     );
 
@@ -34,10 +46,45 @@ class HomePage extends StatelessWidget {
           Colors.lightBlueAccent,
         ]),
       ),
-      child: Column(
-        children: <Widget>[alucard, welcome],
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[titleText, subTitleText, nfcImage],
+          ),
       ),
     );
+
+    checkCard(String cardId) async {
+      await storage.write(key: 'cardId', value: cardId);
+      String authToken = await storage.read(key: 'authToken');
+      final response = await get(
+        'https://rockey-api.lappis.rocks/cards/' + cardId,
+        headers: {HttpHeaders.authorizationHeader: authToken},
+      );
+      int statusCode = response.statusCode;
+      debugPrint(statusCode.toString());
+      if(statusCode == 500) { // Card does not exist
+        Navigator.of(context).pushNamed(CreateCardPage.tag);
+      }else { 
+        Navigator.of(context).pushNamed(WalletPage.tag);
+      }
+      // final responseJson = json.decode(response.body);
+
+    }
+
+    FlutterNfcReader.read().then((response) {
+      checkCard(response.id);
+      // Navigator.of(context).pushNamed(WalletPage.tag);
+
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => WalletPage(cardId: response.id),
+      //   ),
+      // );
+      print(response.id);
+    });
 
     return Scaffold(
       body: body,
