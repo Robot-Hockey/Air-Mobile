@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
 import 'package:air_app/wallet_page.dart';
+import 'package:air_app/create_card_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:io';
+import 'package:http/http.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static String tag = 'home-page';
+  @override
+  _HomePageState createState() => new _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  final storage = new FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +55,34 @@ class HomePage extends StatelessWidget {
       ),
     );
 
+    checkCard(String cardId) async {
+      await storage.write(key: 'cardId', value: cardId);
+      String authToken = await storage.read(key: 'authToken');
+      final response = await get(
+        'https://rockey-api.lappis.rocks/cards/' + cardId,
+        headers: {HttpHeaders.authorizationHeader: authToken},
+      );
+      int statusCode = response.statusCode;
+      debugPrint(statusCode.toString());
+      if(statusCode == 500) { // Card does not exist
+        Navigator.of(context).pushNamed(CreateCardPage.tag);
+      }else { 
+        Navigator.of(context).pushNamed(WalletPage.tag);
+      }
+      // final responseJson = json.decode(response.body);
+
+    }
+
     FlutterNfcReader.read().then((response) {
+      checkCard(response.id);
       // Navigator.of(context).pushNamed(WalletPage.tag);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WalletPage(cardId: response.id),
-          ),
-        );
+
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => WalletPage(cardId: response.id),
+      //   ),
+      // );
       print(response.id);
     });
 

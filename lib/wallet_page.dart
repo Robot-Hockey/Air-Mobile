@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:toast/toast.dart';
+import 'package:http/http.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:io';
+import 'home_page.dart';
 
-class WalletPage extends StatelessWidget {
+class WalletPage extends StatefulWidget {
   static String tag = 'wallet-page';
-  String cardId = '';
+  @override
+  _WalletPageState createState() => new _WalletPageState();
+}
 
-  WalletPage({Key key, @required this.cardId}) : super(key: key);
 
+class _WalletPageState extends State<WalletPage> {
+
+  final storage = new FlutterSecureStorage();
+  final _valueController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -13,18 +24,18 @@ class WalletPage extends StatelessWidget {
     final cardTitle = Padding(
       padding: EdgeInsets.all(8.0),
       child: Text(
-        'Card',
+        'Add Credit to Card',
         style: TextStyle(fontSize: 28.0, color: Colors.black),
       ),
     );
 
-    final idField = Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text(
-        cardId,
-        style: TextStyle(fontSize: 16.0, color: Colors.black54),
-      ),
-    );
+    // final idField = Padding(
+    //   padding: EdgeInsets.all(8.0),
+    //   child: Text(
+    //     cardId,
+    //     style: TextStyle(fontSize: 16.0, color: Colors.black54),
+    //   ),
+    // );
 
     final valueField = TextFormField(
       keyboardType: TextInputType.numberWithOptions(
@@ -32,6 +43,7 @@ class WalletPage extends StatelessWidget {
         signed: true
       ),
       autofocus: false,
+      controller: _valueController,
       decoration: InputDecoration(
         hintText: 'Enter de value',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -39,16 +51,46 @@ class WalletPage extends StatelessWidget {
       ),
     );
 
+    addCredit() async {
+      String authToken = await storage.read(key: 'authToken');
+      String value = _valueController.text;
+      String cardId = await storage.read(key: 'cardId');
+      debugPrint('card ID: ' + cardId.toString());
+      String url = 'https://rockey-api.lappis.rocks/operations';
+      Map<String, String> headers = {"Content-type": "application/json",
+                                     HttpHeaders.authorizationHeader: authToken};
+
+      Map jsonMap = {
+        'operation': {
+          'value': int.parse(value),
+          'public_id': cardId
+        }
+      };
+
+      Response response = await post(url, headers: headers, body: json.encode(jsonMap));
+      int statusCode = response.statusCode;
+      debugPrint(statusCode.toString());
+
+      if(statusCode == 201) {
+        Toast.show("Credit added successfully!", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+        Navigator.of(context).pushNamed(HomePage.tag);
+      }else {
+        Toast.show("Could not add value to card", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+      }
+    }
+
     final addCreditButton = Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0),
       child: RaisedButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
-        onPressed: null,
+        onPressed: () {
+          addCredit();
+        },
         padding: EdgeInsets.all(12),
         color: Colors.lightBlueAccent,
-        child: Text('Adicionar Crédito', style: TextStyle(color: Colors.white)),
+        child: Text('Add Credit', style: TextStyle(color: Colors.white)),
       ),
     );
 
@@ -56,7 +98,7 @@ class WalletPage extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(28.0),
       child: Column(
-        children: <Widget>[cardTitle, idField, valueField, addCreditButton],
+        children: <Widget>[cardTitle, valueField, addCreditButton],
       ),
     );
     

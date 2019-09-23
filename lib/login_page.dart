@@ -39,8 +39,10 @@ class _LoginPageState extends State<LoginPage> {
 
     if(statusCode == 200) {
       String authToken = jsonResponse['auth_token'];
+      int companyId = jsonResponse['user']['company_id'];
       debugPrint(authToken);
       await storage.write(key: 'authToken', value: authToken);
+      await storage.write(key: 'companyId', value: companyId.toString());
       Navigator.of(context).pushNamed(HomePage.tag);
     }else {
       Toast.show("Wrong credentials", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
