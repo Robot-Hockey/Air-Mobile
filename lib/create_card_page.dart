@@ -18,6 +18,23 @@ class _CreateCardPageState extends State<CreateCardPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
 
+  Future<Null> _submitDialog(BuildContext context) async {
+    return await showDialog<Null>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          elevation: 0.0,
+          backgroundColor: Colors.transparent,
+          children: <Widget>[
+            Center(
+              child: CircularProgressIndicator(),
+            )
+          ],
+        );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -29,25 +46,21 @@ class _CreateCardPageState extends State<CreateCardPage> {
       ),
     );
 
-    final nameField = TextFormField(
-      keyboardType: TextInputType.text,
+    final nameField = TextField(
       autofocus: false,
       controller: _nameController,
       decoration: InputDecoration(
-        hintText: 'Name',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-      ),
+        border: OutlineInputBorder(),
+        labelText: 'Name'
+      )
     );
 
-    final emailField = TextFormField(
-      keyboardType: TextInputType.emailAddress,
+    final emailField = TextField(
       autofocus: false,
       controller: _emailController,
       decoration: InputDecoration(
-        hintText: 'Email',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        border: OutlineInputBorder(),
+        labelText: 'Email'
       ),
     );
 
@@ -72,10 +85,12 @@ class _CreateCardPageState extends State<CreateCardPage> {
         }
       };
 
+      _submitDialog(context);
+
       Response response = await post(url, headers: headers, body: json.encode(jsonMap));
       int statusCode = response.statusCode;
       debugPrint(statusCode.toString());
-
+      Navigator.pop(context);
       if(statusCode == 201) {
         Navigator.of(context).pushNamed(HomePage.tag);
       }else {
@@ -83,38 +98,57 @@ class _CreateCardPageState extends State<CreateCardPage> {
       }
     }
 
-    final createCardButton = Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        onPressed: () {
-          createClient();
-        },
-        padding: EdgeInsets.all(12),
-        color: Colors.lightBlueAccent,
-        child: Text('Create Card', style: TextStyle(color: Colors.white)),
-      ),
-    );
-
     final body = Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(28.0),
-      child: Column(
-        children: <Widget>[SizedBox(height: 24.0),
-                           cardTitle,
-                           SizedBox(height: 15.0),
-                           nameField,
-                           SizedBox(height: 15.0),
-                           emailField,
-                           createCardButton],
+      padding: EdgeInsets.all(18.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [
+          Colors.blue,
+          Colors.lightBlueAccent,
+        ]),
+      ),
+      child: Center(
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: 12.0),
+                cardTitle,
+                SizedBox(height: 15.0),
+                nameField,
+                SizedBox(height: 15.0),
+                emailField,
+                ButtonTheme.bar(
+                  child: ButtonBar(
+                    children: <Widget>[
+                      FlatButton(
+                        child: const Text('Reset'),
+                        onPressed: () { /* ... */ },
+                      ),
+                      RaisedButton(
+                        child: const Text(
+                          'SUBMIT',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () {
+                          createClient();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
     
     return Scaffold(
       backgroundColor: Colors.white,
-      body: body,
+      body: body
     );
   }
 }

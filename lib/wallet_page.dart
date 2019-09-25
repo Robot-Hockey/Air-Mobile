@@ -18,13 +18,30 @@ class _WalletPageState extends State<WalletPage> {
   final storage = new FlutterSecureStorage();
   final _valueController = TextEditingController();
 
+  Future<Null> _submitDialog(BuildContext context) async {
+    return await showDialog<Null>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          elevation: 0.0,
+          backgroundColor: Colors.transparent,
+          children: <Widget>[
+            Center(
+              child: CircularProgressIndicator(),
+            )
+          ],
+        );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
     final cardTitle = Padding(
       padding: EdgeInsets.all(8.0),
       child: Text(
-        'Add Credit to Card',
+        'Add Credit',
         style: TextStyle(fontSize: 28.0, color: Colors.black),
       ),
     );
@@ -37,17 +54,16 @@ class _WalletPageState extends State<WalletPage> {
     //   ),
     // );
 
-    final valueField = TextFormField(
+    final valueField = TextField(
+      autofocus: false,
       keyboardType: TextInputType.numberWithOptions(
         decimal: true,
         signed: true
       ),
-      autofocus: false,
       controller: _valueController,
       decoration: InputDecoration(
-        hintText: 'Enter de value',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        border: OutlineInputBorder(),
+        labelText: 'Enter de value'
       ),
     );
 
@@ -67,10 +83,12 @@ class _WalletPageState extends State<WalletPage> {
         }
       };
 
+      _submitDialog(context);
+
       Response response = await post(url, headers: headers, body: json.encode(jsonMap));
       int statusCode = response.statusCode;
       debugPrint(statusCode.toString());
-
+      Navigator.pop(context);
       if(statusCode == 201) {
         Toast.show("Credit added successfully!", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
         Navigator.of(context).pushNamed(HomePage.tag);
@@ -79,26 +97,48 @@ class _WalletPageState extends State<WalletPage> {
       }
     }
 
-    final addCreditButton = Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        onPressed: () {
-          addCredit();
-        },
-        padding: EdgeInsets.all(12),
-        color: Colors.lightBlueAccent,
-        child: Text('Add Credit', style: TextStyle(color: Colors.white)),
-      ),
-    );
-
     final body = Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(28.0),
-      child: Column(
-        children: <Widget>[cardTitle, valueField, addCreditButton],
+      padding: EdgeInsets.all(18.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [
+          Colors.blue,
+          Colors.lightBlueAccent,
+        ]),
+      ),
+      child: Center(
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: 12.0),
+                cardTitle,
+                valueField,
+                ButtonTheme.bar(
+                  child: ButtonBar(
+                    children: <Widget>[
+                      FlatButton(
+                        child: const Text('Reset'),
+                        onPressed: () { /* ... */ },
+                      ),
+                      RaisedButton(
+                        child: const Text(
+                          'SUBMIT',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () {
+                          addCredit();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
     
