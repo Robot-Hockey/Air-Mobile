@@ -69,8 +69,6 @@ class _HomePageState extends State<HomePage> {
       }else { 
         Navigator.of(context).pushNamed(WalletPage.tag);
       }
-      // final responseJson = json.decode(response.body);
-
     }
 
     FlutterNfcReader.read().then((response) {

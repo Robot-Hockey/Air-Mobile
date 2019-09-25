@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:io';
-import 'wallet_page.dart';
+import 'home_page.dart';
 import 'dart:convert';
 import 'package:toast/toast.dart';
 
@@ -77,7 +77,7 @@ class _CreateCardPageState extends State<CreateCardPage> {
       debugPrint(statusCode.toString());
 
       if(statusCode == 201) {
-        Navigator.of(context).pushNamed(WalletPage.tag);
+        Navigator.of(context).pushNamed(HomePage.tag);
       }else {
         Toast.show("Could not create card", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
       }
