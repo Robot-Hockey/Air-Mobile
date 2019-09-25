@@ -120,8 +120,10 @@ class _WalletPageState extends State<WalletPage> {
                   child: ButtonBar(
                     children: <Widget>[
                       FlatButton(
-                        child: const Text('Reset'),
-                        onPressed: () { /* ... */ },
+                        child: const Text('Cancel'),
+                        onPressed: () { 
+                          Navigator.of(context).pushReplacementNamed(HomePage.tag);
+                        },
                       ),
                       RaisedButton(
                         child: const Text(
