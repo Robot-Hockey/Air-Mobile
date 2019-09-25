@@ -124,8 +124,10 @@ class _CreateCardPageState extends State<CreateCardPage> {
                   child: ButtonBar(
                     children: <Widget>[
                       FlatButton(
-                        child: const Text('Reset'),
-                        onPressed: () { /* ... */ },
+                        child: const Text('Cancel'),
+                        onPressed: () { 
+                          Navigator.of(context).pushReplacementNamed(HomePage.tag);
+                        },
                       ),
                       RaisedButton(
                         child: const Text(
