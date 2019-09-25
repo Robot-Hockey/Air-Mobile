@@ -30,13 +30,15 @@ class _LoginPageState extends State<LoginPage> {
       'password': password
     };
 
+    _submitDialog(context);
+
     Response response = await post(url, headers: headers, body: json.encode(jsonMap));
     int statusCode = response.statusCode;
     debugPrint(statusCode.toString());
 
     String body = response.body;
     Map<String, dynamic> jsonResponse = jsonDecode(body);
-
+    Navigator.pop(context);
     if(statusCode == 200) {
       String authToken = jsonResponse['auth_token'];
       int companyId = jsonResponse['user']['company_id'];
@@ -47,6 +49,23 @@ class _LoginPageState extends State<LoginPage> {
     }else {
       Toast.show("Wrong credentials", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
     }
+  }
+
+  Future<Null> _submitDialog(BuildContext context) async {
+    return await showDialog<Null>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          elevation: 0.0,
+          backgroundColor: Colors.transparent,
+          children: <Widget>[
+            Center(
+              child: CircularProgressIndicator(),
+            )
+          ],
+        );
+    });
   }
 
   @override
@@ -78,23 +97,6 @@ class _LoginPageState extends State<LoginPage> {
         labelText: 'Password'
       ),
     );
-
-    Future<Null> _submitDialog(BuildContext context) async {
-      return await showDialog<Null>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            elevation: 0.0,
-            backgroundColor: Colors.transparent,
-            children: <Widget>[
-              Center(
-                child: CircularProgressIndicator(),
-              )
-            ],
-          );
-      });
-    }
 
     final body = Container(
       width: MediaQuery.of(context).size.width,
@@ -134,7 +136,6 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () {
-                          // _submitDialog(context);
                           loginUser();
                         },
                       ),
