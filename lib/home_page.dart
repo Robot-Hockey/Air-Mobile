@@ -75,15 +75,6 @@ class _HomePageState extends State<HomePage> {
 
     FlutterNfcReader.read().then((response) {
       checkCard(response.id);
-      // Navigator.of(context).pushNamed(WalletPage.tag);
-
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => WalletPage(cardId: response.id),
-      //   ),
-      // );
-      print(response.id);
     });
 
     return Scaffold(
