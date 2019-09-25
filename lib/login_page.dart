@@ -45,7 +45,8 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint(authToken);
       await storage.write(key: 'authToken', value: authToken);
       await storage.write(key: 'companyId', value: companyId.toString());
-      Navigator.of(context).pushNamed(HomePage.tag);
+      // Navigator.cpushNamed(HomePage.tag);
+      Navigator.of(context).pushReplacementNamed(HomePage.tag);
     }else {
       Toast.show("Wrong credentials", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
     }

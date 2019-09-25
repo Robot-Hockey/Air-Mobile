@@ -1,3 +1,4 @@
+import 'package:air_app/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
 import 'package:air_app/wallet_page.dart';
@@ -19,10 +20,26 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
 
+    final logoutButton = Row(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        new Expanded(
+          child: new Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+                // padding: EdgeInsets.all(14.0),
+                icon: new Icon(Icons.exit_to_app, color: Colors.white),
+                onPressed: () => Navigator.of(context).pushReplacementNamed(LoginPage.tag)
+              ),
+          ),
+        ),
+      ]
+    );
+
     final titleText = Padding(
       padding: EdgeInsets.all(2.0),
       child: Text(
-        'Leitor',
+        'Reader',
         style: TextStyle(fontSize: 28.0, color: Colors.white),
       ),
     );
@@ -32,14 +49,13 @@ class _HomePageState extends State<HomePage> {
     final subTitleText = Padding(
       padding: EdgeInsets.all(2.0),
       child: Text(
-        'Apresente um cartão',
+        'Present a card',
         style: TextStyle(fontSize: 18.0, color: Colors.white),
       ),
     );
 
     final body = Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(28.0),
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: [
           Colors.blue,
@@ -50,7 +66,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[titleText, subTitleText, nfcImage],
+          children: <Widget>[logoutButton, titleText, subTitleText, nfcImage],
           ),
       ),
     );
