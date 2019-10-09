@@ -6,7 +6,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart';
 
-
 class LoginPage extends StatefulWidget {
   static String tag = 'login-page';
   @override
@@ -14,7 +13,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   final storage = new FlutterSecureStorage();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -25,21 +23,19 @@ class _LoginPageState extends State<LoginPage> {
     String url = 'https://rockey-api.lappis.rocks/login';
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    Map jsonMap = {
-      'email': email,
-      'password': password
-    };
+    Map jsonMap = {'email': email, 'password': password};
 
     _submitDialog(context);
 
-    Response response = await post(url, headers: headers, body: json.encode(jsonMap));
+    Response response =
+        await post(url, headers: headers, body: json.encode(jsonMap));
     int statusCode = response.statusCode;
     debugPrint(statusCode.toString());
 
     String body = response.body;
     Map<String, dynamic> jsonResponse = jsonDecode(body);
     Navigator.pop(context);
-    if(statusCode == 200) {
+    if (statusCode == 200) {
       String authToken = jsonResponse['auth_token'];
       int companyId = jsonResponse['user']['company_id'];
       debugPrint(authToken);
@@ -47,26 +43,27 @@ class _LoginPageState extends State<LoginPage> {
       await storage.write(key: 'companyId', value: companyId.toString());
       // Navigator.cpushNamed(HomePage.tag);
       Navigator.of(context).pushReplacementNamed(HomePage.tag);
-    }else {
-      Toast.show("Wrong credentials", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+    } else {
+      Toast.show("Wrong credentials", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
   }
 
   Future<Null> _submitDialog(BuildContext context) async {
     return await showDialog<Null>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          elevation: 0.0,
-          backgroundColor: Colors.transparent,
-          children: <Widget>[
-            Center(
-              child: CircularProgressIndicator(),
-            )
-          ],
-        );
-    });
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            elevation: 0.0,
+            backgroundColor: Colors.transparent,
+            children: <Widget>[
+              Center(
+                child: CircularProgressIndicator(),
+              )
+            ],
+          );
+        });
   }
 
   @override
@@ -82,77 +79,84 @@ class _LoginPageState extends State<LoginPage> {
 
     final emailField = TextField(
       autofocus: false,
+      style: TextStyle(color: Colors.white),
+      cursorColor: Colors.white,
       controller: _emailController,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Email'
-      ),
+          border: OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white, width: 2.0)),
+          labelText: 'Email',
+          labelStyle: TextStyle(color: Colors.white)),
     );
 
     final passwordField = TextField(
       autofocus: false,
+      style: TextStyle(color: Colors.white),
+      cursorColor: Colors.white,
       controller: _passwordController,
       obscureText: true,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Password'
-      ),
+          border: OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white, width: 2.0)),
+          labelText: 'Password',
+          labelStyle: TextStyle(color: Colors.white)),
     );
 
     final body = Container(
+      height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(18.0),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          Colors.blue,
-          Colors.lightBlueAccent,
-        ]),
-      ),
-      child: Center(
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const ListTile(
-                  title: Text('Login'),
-                  subtitle: Text('Fill with your credentials'),
+          image: DecorationImage(
+              colorFilter: ColorFilter.mode(Colors.purple, BlendMode.colorBurn),
+              image: AssetImage("assets/background.jpg"),
+              fit: BoxFit.cover)),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 0.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const ListTile(
+                title: Text(
+                  'Login',
+                  style: TextStyle(color: Colors.white),
                 ),
-                SizedBox(height: 12.0),
-                emailField,
-                SizedBox(height: 14.0),
-                passwordField,
-                SizedBox(height: 16.0),
-                ButtonTheme.bar(
-                  child: ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        child: const Text('Forgot password?'),
-                        onPressed: () { /* ... */ },
+                subtitle: Text('Fill with your credentials',
+                    style: TextStyle(color: Colors.white)),
+              ),
+              SizedBox(height: 12.0),
+              emailField,
+              SizedBox(height: 14.0),
+              passwordField,
+              SizedBox(height: 16.0),
+              ButtonTheme.bar(
+                child: ButtonBar(
+                  children: <Widget>[
+                    FlatButton(
+                      child: const Text('Forgot password?'),
+                      onPressed: () {/* ... */},
+                    ),
+                    RaisedButton(
+                      child: const Text(
+                        'SUBMIT',
+                        style: TextStyle(color: Colors.white),
                       ),
-                      RaisedButton(
-                        child: const Text(
-                          'SUBMIT',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        onPressed: () {
-                          loginUser();
-                        },
-                      ),
-                    ],
-                  ),
+                      onPressed: () {
+                        loginUser();
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            ],
         ),
       ),
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: body
-    );
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(child: body));
   }
 }
