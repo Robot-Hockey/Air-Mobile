@@ -48,6 +48,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/nfc.png
+    - assets/background.jpg
   fonts:
       - family: Nunito
         fonts:
