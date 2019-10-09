@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
       await storage.write(key: 'cardId', value: cardId);
       String authToken = await storage.read(key: 'authToken');
       final response = await get(
-        'https://rockey-api.lappis.rocks/cards/' + cardId,
+        'https://hockey-api.lappis.rocks/cards/' + cardId,
         headers: {HttpHeaders.authorizationHeader: authToken},
       );
       int statusCode = response.statusCode;

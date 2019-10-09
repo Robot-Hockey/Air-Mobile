@@ -72,7 +72,7 @@ class _WalletPageState extends State<WalletPage> {
       String value = _valueController.text;
       String cardId = await storage.read(key: 'cardId');
       debugPrint('card ID: ' + cardId.toString());
-      String url = 'https://rockey-api.lappis.rocks/operations';
+      String url = 'https://hockey-api.lappis.rocks/operations';
       Map<String, String> headers = {"Content-type": "application/json",
                                      HttpHeaders.authorizationHeader: authToken};
 

@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   loginUser() async {
     String email = _emailController.text;
     String password = _passwordController.text;
-    String url = 'https://rockey-api.lappis.rocks/login';
+    String url = 'https://hockey-api.lappis.rocks/login';
     Map<String, String> headers = {"Content-type": "application/json"};
 
     Map jsonMap = {

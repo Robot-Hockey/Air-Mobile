@@ -72,7 +72,7 @@ class _CreateCardPageState extends State<CreateCardPage> {
       debugPrint('company ID: ' + companyId.toString());
       String cardId = await storage.read(key: 'cardId');
       debugPrint('card ID: ' + cardId.toString());
-      String url = 'https://rockey-api.lappis.rocks/cards';
+      String url = 'https://hockey-api.lappis.rocks/cards';
       Map<String, String> headers = {"Content-type": "application/json",
                                      HttpHeaders.authorizationHeader: authToken};
 
