@@ -63,7 +63,7 @@ class _WalletPageState extends State<WalletPage> {
       controller: _valueController,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
-        labelText: 'Enter de value'
+        labelText: 'Enter the value'
       ),
     );
 
